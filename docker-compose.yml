@@ -42,7 +42,7 @@ services:
       # One username or UUID per line. This is the whole admin list —
       # editing this and opening a PR *is* how someone becomes an admin.
       OPS: |
-        maximxls
+        maximxlss
 
       MOTD: |-
         §d✦ mc.xls.msk.ru ✦
