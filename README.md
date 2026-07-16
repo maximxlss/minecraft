@@ -32,11 +32,10 @@ Then copy `docker-compose.yml` (and `plugin-configs/` if non-empty) to
 - Variables `DEPLOY_HOST` and `DEPLOY_USER` — the host address and the SSH
   user to connect as.
 
-Also set up branch protection on `main` (`Settings → Branches → Add branch
-ruleset`): require the `Validate / lint` and `Validate / smoke-test` checks
-to pass, and require the branch be up to date before merging. GitHub only
-lets you pick a check as required after it's run at least once, so this
-has to happen after the first PR (this one works).
+Also set up branch protection on `main` (Settings → Branches → Add branch ruleset): require the
+`Validate / lint` and `Validate / smoke-test` checks to pass, and require the branch be up
+to date before merging. GitHub only lets you pick a check as required after it's run at
+least once, so this has to happen after the first PR (this one works).
 
 ## Repo layout
 
