@@ -15,8 +15,8 @@ is what actually changes the live server.
   whatever Paper's newest stable build is (see `docker-compose.yml`'s
   `VERSION: LATEST`), so this will drift forward over time. You don't need
   to keep your client version in lockstep with it —
-  [ViaVersion](https://modrinth.com/plugin/viaversion) is installed
-  specifically so slightly older or newer clients still connect.
+  [ViaVersion](https://modrinth.com/plugin/viaversion) +
+  [ViaBackwards](https://modrinth.com/plugin/viabackwards) are installed so slightly older or newer clients still connect.
 - **No whitelist, no Mojang account needed.** First time you join, run
   `/register <password> <password>`; every time after, `/login <password>`.
   Pick a password you're fine reusing for a Minecraft server, not one from
