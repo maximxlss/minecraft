@@ -168,12 +168,14 @@ this — defaults below are what I'd ship unless you redirect:
 - **JVM heap sizing**: host has 3.8GB total. I'd default to a 2.5G heap for
   Paper, leaving headroom for the OS + Docker daemon. Tunable via the
   `MEMORY` env var in `docker-compose.yml`.
-- **Version bumps**: bumping the Minecraft/Paper version in
-  `docker-compose.yml` triggers the same immediate-restart deploy. Paper
-  handles in-place world upgrades on first boot (standard, well-supported
-  path) — worth treating a version-changing PR as a cue to double check the
-  latest backup is fresh, though the automated sidecar backup already runs
-  independent of deploys.
+- **Version bumps — resolved**: `VERSION`/`PAPER_BUILD` are pinned exactly
+  (currently `26.1.2` build `74`), not `LATEST` — same reasoning as plugin
+  pinning, and `validate_config.py` now rejects `VERSION: latest` the same
+  way it rejects an unpinned plugin. Bumping either is a deliberate PR that
+  triggers the same immediate-restart deploy; Paper handles in-place world
+  upgrades on first boot, but worth treating a version-changing PR as a cue
+  to double check the latest backup is fresh, even though the sidecar
+  backup already runs independent of deploys.
 - **Plugin/mod version pinning — needs to be pinned down before scaffolding
   `validate.yml`**: the itzg image has more than one plugin-source
   mechanism (raw `PLUGINS` URLs, `MODRINTH_PROJECTS`, `SPIGET_RESOURCES`,

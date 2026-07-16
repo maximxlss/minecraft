@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Checks the OPS/WHITELIST/MODRINTH_PROJECTS blocks in docker-compose.yml.
+"""Checks the OPS/WHITELIST/VERSION/MODRINTH_PROJECTS blocks in docker-compose.yml.
 
 `docker compose config` already confirms the file parses; this catches the
 things that are syntactically valid YAML but still wrong: malformed
-usernames/UUIDs, duplicate plugin entries, and unpinned ("latest") plugin
-refs (SPEC.md §6, "Plugin/mod version pinning").
+usernames/UUIDs, duplicate plugin entries, and unpinned ("latest") version
+refs — for plugins and for the server itself (SPEC.md §6, "Plugin/mod
+version pinning").
 """
 import re
 import sys
@@ -51,6 +52,26 @@ def check_plugins(block):
     return errors
 
 
+def check_server_version(env):
+    errors = []
+    version = str(env.get("VERSION", "")).strip().lower()
+    if version in ("", "latest"):
+        errors.append(
+            "VERSION: must be pinned to an exact Minecraft version, not "
+            "'latest' — the running server has to be fully determined by "
+            "the git commit, same reasoning as plugin pinning"
+        )
+    if str(env.get("TYPE", "")).strip().upper() == "PAPER" and not str(
+        env.get("PAPER_BUILD", "")
+    ).strip():
+        errors.append(
+            "PAPER_BUILD: must be set alongside TYPE: PAPER — without it, "
+            "VERSION alone still floats to whatever the newest build for "
+            "that Minecraft version happens to be at deploy time"
+        )
+    return errors
+
+
 def main():
     path = sys.argv[1] if len(sys.argv) > 1 else "docker-compose.yml"
     with open(path) as f:
@@ -61,6 +82,7 @@ def main():
     errors += check_players("OPS", env.get("OPS", ""))
     errors += check_players("WHITELIST", env.get("WHITELIST", ""))
     errors += check_plugins(env.get("MODRINTH_PROJECTS", ""))
+    errors += check_server_version(env)
 
     if errors:
         print("validate_config.py found problems:")
