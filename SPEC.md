@@ -28,7 +28,7 @@ where that limit actually bites.
 | Pre-merge validation | **Smoke test**: `validate.yml` actually boots the PR's proposed config (throwaway world, never `/opt/minecraft/data`) and waits for a successful "Done" before passing | Catches a crash-on-load PR before merge instead of after. Will drop this if it proves flaky/too slow in practice — not committing to it past a first try. |
 | Admin model | **`OPS` stays binary** (full admin or nothing) | Good enough for now; tiered roles (LuckPerms etc.) would be a later addition, not needed today. |
 | Whitelist | **Off by default** | Your call — open server, no invite-list friction for now. |
-| Player connectivity | **Static IP + a domain you'll assign** pointing at it | No DDNS machinery needed; README just documents the domain once it exists. |
+| Player connectivity | **`mc.xls.msk.ru`**, static IP behind it | No DDNS machinery needed — the domain is live and documented in README.md. |
 | Container shutdown | **`stop_grace_period` raised well past Compose's 10s default** (e.g. 60s), so Paper gets real time to save the world before a redeploy's SIGTERM turns into a SIGKILL | A restart-on-merge model is only safe if the "restart" part is actually graceful — 10s isn't enough once there's a real world + players on it. |
 | Authentication | **`online-mode=false`** (no Mojang account required) **+ a local register/login plugin** (AuthMeReloaded — password-protected usernames, its own local account DB) | Lets friends without a paid Minecraft account join, while still closing the impersonation gap offline mode opens up: without this, anyone could log in *as* an OP'd username and get full admin with zero auth. A password on each username fixes that without needing Mojang. |
 

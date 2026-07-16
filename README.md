@@ -1,17 +1,44 @@
-# minecraft-server
+# mc.xls.msk.ru
 
-A Paper Minecraft server defined entirely in this repo. Merging a pull
-request is the only sysadmin action required — see `SPEC.md` for the full
-design and `docs/CONTRIBUTING.md` for how to actually change something.
+_[Русская версия](README.ru.md)_
 
-## Connecting
+A Minecraft server that anyone can help build. There's no admin sitting at
+a console making changes by hand — the whole thing (plugins, settings,
+even who's an admin) lives in this repository, and merging a pull request
+is what actually changes the live server.
 
-- Address: _domain TBD — static IP, DNS record not set up yet_
-- Port: `25565` (default)
-- No whitelist. Offline-mode accounts — first join, run
-  `/register <password> <password>`; after that, `/login <password>`.
+## Play
 
-## First-time host setup (one-time, manual)
+- **Address:** `mc.xls.msk.ru`, default port (`25565`) — just paste the
+  address in, no port needed.
+- **Version:** currently Paper **26.1.2**, but the server always tracks
+  whatever Paper's newest stable build is (see `docker-compose.yml`'s
+  `VERSION: LATEST`), so this will drift forward over time. You don't need
+  to keep your client version in lockstep with it —
+  [ViaVersion](https://modrinth.com/plugin/viaversion) is installed
+  specifically so slightly older or newer clients still connect.
+- **No whitelist, no Mojang account needed.** First time you join, run
+  `/register <password> <password>`; every time after, `/login <password>`.
+  Pick a password you're fine reusing for a Minecraft server, not one from
+  anywhere that actually matters — accounts here are local to this server,
+  not tied to Mojang.
+- **Backups run automatically** every 24h, so a griefer or a bad build
+  decision is recoverable, not catastrophic.
+
+## Contribute
+
+Want to add a plugin, change a setting, or nominate someone as admin?
+Open a pull request. Once it's reviewed and merged, it's live on the real
+server within a minute or two — that's the entire deploy process. See
+[`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) for the how-to, or
+[`SPEC.md`](SPEC.md) if you want the full design and the reasoning behind
+it.
+
+---
+
+## Maintaining this server
+
+### First-time host setup (one-time, manual)
 
 ```
 ssh minecraft
@@ -23,7 +50,7 @@ Then copy `docker-compose.yml` (and `plugin-configs/` if non-empty) to
 `/opt/minecraft/` and run `docker compose up -d` from there. After this,
 `deploy.yml` takes over on every merge to `main`.
 
-## Wiring up CI
+### Wiring up CI
 
 `deploy.yml` needs, on the GitHub repo:
 
@@ -32,11 +59,12 @@ Then copy `docker-compose.yml` (and `plugin-configs/` if non-empty) to
 - Variables `DEPLOY_HOST` and `DEPLOY_USER` — the host address and the SSH
   user to connect as.
 
-Also set up branch protection on `main` (Settings → Branches → Add branch ruleset): require the
-`Validate / lint` and `Validate / smoke-test` checks to pass, and require the branch be up
-to date before merging. GitHub only lets you pick a check as required after it's run at
-least once, so this has to happen after the first PR (this one works).
+Also set up branch protection on `main` (`Settings → Branches → Add branch
+ruleset`): require the `Validate / lint` and `Validate / smoke-test` checks
+to pass, and require the branch be up to date before merging. GitHub only
+lets you pick a check as required after it's run at least once, so this
+has to happen after the first PR (this one works).
 
-## Repo layout
+### Repo layout
 
 See `SPEC.md` §4.
