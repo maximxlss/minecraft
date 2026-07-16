@@ -24,12 +24,14 @@ services:
     environment:
       EULA: "TRUE"
       TYPE: "PAPER"
-      # Not pinning to a specific version here: Paper handles in-place
-      # world upgrades on startup, and "LATEST" keeps us on a supported
-      # build without hand-tracking version numbers (SPEC.md §6, "Version
-      # bumps"). Plugins are pinned individually below instead, since an
-      # unpinned plugin is the thing that actually breaks reproducibility.
-      VERSION: "LATEST"
+      # Pinned exactly, same as the plugins below — "the repo is the whole
+      # definition of the server" only holds if a deploy can't silently
+      # change the Minecraft version underneath everything else. Paper
+      # handles in-place world upgrades fine, so bumping this is safe;
+      # it just has to be a deliberate PR (SPEC.md §6, "Version bumps"),
+      # not something that happens on its own on the next redeploy.
+      VERSION: "26.1.2"
+      PAPER_BUILD: "74"
       MEMORY: "2500M"
 
       # Local accounts, no Mojang purchase required — paired with the
@@ -52,10 +54,9 @@ services:
       # exact version ID or number — never bare "latest" (validate_config.py
       # rejects that, see SPEC.md §6 "Plugin/mod version pinning").
       #
-      # ViaVersion + ViaBackwards: since VERSION is "LATEST" (above), the
-      # Minecraft version this server runs can change on any deploy —
-      # without these, players would need to update their client in lockstep
-      # with every merge. With them, slightly older/newer clients still connect.
+      # ViaVersion + ViaBackwards: VERSION is pinned (above), but players'
+      # own clients drift independently — some update immediately, some
+      # don't. These let slightly older/newer clients connect regardless.
       MODRINTH_PROJECTS: |
         authmereloaded:ID72cfmM
         viaversion:ZH8459B6

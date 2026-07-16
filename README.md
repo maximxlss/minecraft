@@ -11,12 +11,12 @@ is what actually changes the live server.
 
 - **Address:** `mc.xls.msk.ru`, default port (`25565`) — just paste the
   address in, no port needed.
-- **Version:** currently Paper **26.1.2**, but the server always tracks
-  whatever Paper's newest stable build is (see `docker-compose.yml`'s
-  `VERSION: LATEST`), so this will drift forward over time. You don't need
-  to keep your client version in lockstep with it —
+- **Version:** Paper **26.1.2** (build 74), pinned exactly in
+  `docker-compose.yml` — it only changes via a deliberate PR, not on its
+  own. You still don't need to keep your client version in exact lockstep:
   [ViaVersion](https://modrinth.com/plugin/viaversion) +
-  [ViaBackwards](https://modrinth.com/plugin/viabackwards) are installed so slightly older or newer clients still connect.
+  [ViaBackwards](https://modrinth.com/plugin/viabackwards) are installed so
+  slightly older or newer clients still connect.
 - **No whitelist, no Mojang account needed.** First time you join, run
   `/register <password> <password>`; every time after, `/login <password>`.
   Pick a password you're fine reusing for a Minecraft server, not one from
