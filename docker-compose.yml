@@ -73,9 +73,9 @@ services:
       STOP_SERVER_ANNOUNCE_DELAY: "10"
     volumes:
       - ${MC_DATA_DIR:-/opt/minecraft/data}:/data
-      # BlueMap refuses to run until it's told the server operator accepts
-      # Mojang's EULA for the client resources it downloads — same
-      # acceptance as EULA: TRUE above, just BlueMap's own flag for it.
+      # BlueMap won't start its webserver/web map until it's told the server
+      # operator accepts Mojang's EULA for the client resources it downloads —
+      # same acceptance as EULA: TRUE above, just BlueMap's own flag for it.
       - ./plugin-configs/BlueMap/core.conf:/data/plugins/BlueMap/core.conf
       #
       # Datapacks likewise, once one exists, e.g.:
