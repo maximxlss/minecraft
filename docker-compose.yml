@@ -17,6 +17,10 @@ services:
     stop_grace_period: 60s
     ports:
       - "25565:25565"
+      # BlueMap's built-in webserver (SPEC.md §6) — also needs port 8100
+      # forwarded on the router, same as 25565, for it to be reachable at
+      # mc.xls.msk.ru:8100.
+      - "8100:8100"
     environment:
       EULA: "TRUE"
       TYPE: "PAPER"
@@ -56,6 +60,10 @@ services:
         authmereloaded:ID72cfmM
         viaversion:ZH8459B6
         viabackwards:hYhg2QBT
+        essentialsx:nY6VN1XH
+        skinsrestorer:jPoqTGpe
+        coreprotect:Kma0kBsY
+        bluemap:8Ci8SkQp
 
       ENABLE_RCON: "TRUE"
       RCON_PASSWORD: ${RCON_PASSWORD:?RCON_PASSWORD must be set in .env}
