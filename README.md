@@ -30,7 +30,8 @@ is what actually changes the live server.
 - **QoL commands** via [EssentialsX](https://modrinth.com/plugin/essentialsx)
   — `/home`, `/tpa`, `/spawn`, `/kit`, and the rest of the usual set.
 - **Live map:** [BlueMap](https://modrinth.com/plugin/bluemap) at
-  `mc.xls.msk.ru:8100` — browse the world from outside the game.
+  [https://xls.msk.ru/minecraft_map/](https://xls.msk.ru/minecraft_map/) —
+  browse the world from outside the game.
 
 ## Contribute
 

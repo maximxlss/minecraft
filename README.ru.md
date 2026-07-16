@@ -33,7 +33,8 @@ Minecraft-сервер, который может строить кто угод
   [EssentialsX](https://modrinth.com/plugin/essentialsx) — `/home`, `/tpa`,
   `/spawn`, `/kit` и остальной привычный набор.
 - **Живая карта:** [BlueMap](https://modrinth.com/plugin/bluemap) по адресу
-  `mc.xls.msk.ru:8100` — можно смотреть на мир снаружи игры.
+  [https://xls.msk.ru/minecraft_map/](https://xls.msk.ru/minecraft_map/) —
+  можно смотреть на мир снаружи игры.
 
 ## Участвовать
 
