@@ -21,9 +21,16 @@ is what actually changes the live server.
   `/register <password> <password>`; every time after, `/login <password>`.
   Pick a password you're fine reusing for a Minecraft server, not one from
   anywhere that actually matters — accounts here are local to this server,
-  not tied to Mojang.
-- **Backups run automatically** every 24h, so a griefer or a bad build
-  decision is recoverable, not catastrophic.
+  not tied to Mojang. [SkinsRestorer](https://modrinth.com/plugin/skinsrestorer)
+  is installed so you still show up with your real skin despite that.
+- **Grief protection:** [CoreProtect](https://modrinth.com/plugin/coreprotect)
+  logs every block change, so a troll (there's no whitelist, remember) is a
+  quick rollback, not lost work. Automatic backups run every 24h on top of
+  that, for anything CoreProtect can't fix.
+- **QoL commands** via [EssentialsX](https://modrinth.com/plugin/essentialsx)
+  — `/home`, `/tpa`, `/spawn`, `/kit`, and the rest of the usual set.
+- **Live map:** [BlueMap](https://modrinth.com/plugin/bluemap) at
+  `mc.xls.msk.ru:8100` — browse the world from outside the game.
 
 ## Contribute
 
@@ -49,6 +56,9 @@ git clone <this repo> && cd minecraft-server
 Then copy `docker-compose.yml` (and `plugin-configs/` if non-empty) to
 `/opt/minecraft/` and run `docker compose up -d` from there. After this,
 `deploy.yml` takes over on every merge to `main`.
+
+The router needs to forward two ports to the host: `25565` (the game) and
+`8100` (BlueMap's web map).
 
 ### Wiring up CI
 
