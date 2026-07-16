@@ -1,0 +1,37 @@
+name: Deploy
+
+# Only runs on pushes to main (i.e. after a PR is merged) — a fork PR never
+# sees these secrets, since it never triggers this workflow (SPEC.md §5).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {} # manual re-run without needing a new commit
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false # queue, don't let two deploys race the host
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install SSH deploy key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+
+      - name: Sync config to host
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H "${{ vars.DEPLOY_HOST }}" >> ~/.ssh/known_hosts
+          rsync -az docker-compose.yml \
+            "${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:/opt/minecraft/docker-compose.yml"
+          rsync -az --delete plugin-configs/ \
+            "${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:/opt/minecraft/plugin-configs/"
+
+      - name: Apply
+        run: |
+          ssh "${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}" \
+            "cd /opt/minecraft && docker compose up -d --remove-orphans"

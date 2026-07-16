@@ -1,0 +1,83 @@
+# This file IS the config surface (see SPEC.md §3/§4). Everything a
+# contributor needs to change to add a plugin, add an admin, or tweak a
+# server setting lives here in plaintext — no templating, no indirection.
+#
+# Secrets (currently just RCON_PASSWORD) come from an untracked .env file
+# that lives next to this file on the host (/opt/minecraft/.env), created
+# once by provisioning/bootstrap.sh. Never committed.
+
+services:
+  mc:
+    image: itzg/minecraft-server:latest
+    container_name: mc
+    restart: unless-stopped
+    # Paper needs real time to flush the world to disk on SIGTERM before
+    # Compose gives up and SIGKILLs it — the 10s Compose default is not
+    # enough once there's a real world + players on it (SPEC.md §1).
+    stop_grace_period: 60s
+    ports:
+      - "25565:25565"
+    environment:
+      EULA: "TRUE"
+      TYPE: "PAPER"
+      # Not pinning to a specific version here: Paper handles in-place
+      # world upgrades on startup, and "LATEST" keeps us on a supported
+      # build without hand-tracking version numbers (SPEC.md §6, "Version
+      # bumps"). Plugins are pinned individually below instead, since an
+      # unpinned plugin is the thing that actually breaks reproducibility.
+      VERSION: "LATEST"
+      MEMORY: "2500M"
+
+      # Local accounts, no Mojang purchase required — paired with the
+      # AuthMeReloaded plugin below for password-protected usernames
+      # (SPEC.md §1, "Authentication").
+      ONLINE_MODE: "FALSE"
+
+      ENABLE_WHITELIST: "FALSE"
+
+      # One username or UUID per line. This is the whole admin list —
+      # editing this and opening a PR *is* how someone becomes an admin.
+      OPS: |
+        maximxls
+
+      # Modrinth project:version pairs, one per line. Version must be an
+      # exact version ID or number — never bare "latest" (validate_config.py
+      # rejects that, see SPEC.md §6 "Plugin/mod version pinning").
+      MODRINTH_PROJECTS: |
+        authmereloaded:ID72cfmM
+
+      ENABLE_RCON: "TRUE"
+      RCON_PASSWORD: ${RCON_PASSWORD:?RCON_PASSWORD must be set in .env}
+
+      # Give players connected during a merge-triggered restart a heads up
+      # instead of an instant disconnect (SPEC.md §6).
+      STOP_SERVER_ANNOUNCE_DELAY: "10"
+    volumes:
+      - ${MC_DATA_DIR:-/opt/minecraft/data}:/data
+      # Per-plugin config overrides get bind-mounted individually as they're
+      # added, e.g.:
+      # - ./plugin-configs/SomePlugin/config.yml:/data/plugins/SomePlugin/config.yml
+      #
+      # Datapacks likewise, once one exists, e.g.:
+      # - ./datapacks/some-pack:/data/world/datapacks/some-pack
+
+  mc-backup:
+    image: itzg/mc-backup:latest
+    container_name: mc-backup
+    restart: unless-stopped
+    depends_on:
+      - mc
+    environment:
+      RCON_HOST: mc
+      RCON_PORT: "25575"
+      RCON_PASSWORD: ${RCON_PASSWORD:?RCON_PASSWORD must be set in .env}
+      # Coordinates save-off -> save-all -> backup -> save-on around every
+      # snapshot so the world is never captured mid-write (SPEC.md §6).
+      BACKUP_INTERVAL: "24h"
+      INITIAL_DELAY: "2m"
+      PRUNE_BACKUPS_DAYS: "7"
+    volumes:
+      - ${MC_DATA_DIR:-/opt/minecraft/data}:/data:ro
+      - ${MC_BACKUP_DIR:-/opt/minecraft/backups}:/backups
+    # No RCON ports: entry on either service — nothing outside this compose
+    # network needs to reach RCON (SPEC.md §6).

@@ -1,0 +1,64 @@
+name: Validate
+
+# Runs on every PR, including from forks — deliberately no secrets touch
+# this workflow (SPEC.md §5).
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: yamllint
+        run: |
+          pip install yamllint
+          yamllint docker-compose.yml
+
+      - name: docker compose config
+        run: |
+          RCON_PASSWORD=placeholder docker compose config -q
+
+      - name: Validate OPS / WHITELIST / plugin pins
+        run: |
+          pip install pyyaml
+          python3 .github/scripts/validate_config.py docker-compose.yml
+
+  smoke-test:
+    needs: lint
+    runs-on: ubuntu-latest
+    # First cut of this — if it turns out flaky or too slow in practice, we
+    # drop it back to lint-only rather than fight it (SPEC.md §1/§5).
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Boot the PR's config against a throwaway volume
+        env:
+          RCON_PASSWORD: smoke-test-only
+          MC_DATA_DIR: /tmp/mc-smoke-data
+          MC_BACKUP_DIR: /tmp/mc-smoke-backups
+        run: |
+          mkdir -p "$MC_DATA_DIR" "$MC_BACKUP_DIR"
+          docker compose up -d
+          echo "Waiting for the server to finish booting..."
+          timeout 300 bash -c '
+            until docker compose logs mc 2>/dev/null | grep -q "Done ("; do
+              if ! docker compose ps mc --status running | grep -q mc; then
+                echo "mc container exited before finishing boot"
+                docker compose logs mc
+                exit 1
+              fi
+              sleep 5
+            done
+          '
+          docker compose logs mc | tail -n 50
+
+      - name: Tear down
+        if: always()
+        env:
+          RCON_PASSWORD: smoke-test-only
+          MC_DATA_DIR: /tmp/mc-smoke-data
+          MC_BACKUP_DIR: /tmp/mc-smoke-backups
+        run: docker compose down -v
